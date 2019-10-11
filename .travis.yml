@@ -6,6 +6,7 @@ jdk:
   - oraclejdk9
 
 env:
+  matrix:
   - COVERAGE=0.5 TARGET=ui
   - COVERAGE=0.5 TARGET=service/cart
   - COVERAGE=0.5 TARGET=service/user
@@ -13,18 +14,19 @@ env:
   - COVERAGE=0.5 TARGET=repository/cart
   - COVERAGE=0.5 TARGET=repository/product
   - COVERAGE=0.31 TARGET=repository/user
+  global:
+  - secure: MIGJAoGBALeFvpaS4szqW9jo3uH3kaS2YJZSyghvokomKuiPIBr8mnO6BNm6C5sJ\nDKX7ihhJdKUA/MpEFCiObj5ZPiXcV7gHlyVN2FCP5ucFLHtasa3j6nCH5lvdLxAw\nAbPKq8PPCq8rurmFWBLuuCWXR0VW2OG1+Oo4b9U1d5ywST7hpvOrAgMBAAE=
+  - secure: nMIGJAoGBALeFvpaS4szqW9jo3uH3kaS2YJZSyghvokomKuiPIBr8mnO6BNm6C5sJ\nDKX7ihhJdKUA/MpEFCiObj5ZPiXcV7gHlyVN2FCP5ucFLHtasa3j6nCH5lvdLxAw\nAbPKq8PPCq8rurmFWBLuuCWXR0VW2OG1+Oo4b9U1d5ywST7hpvOrAgMBAAE=
 
 install:
   - "./gradlew clean jar"
-
 script:
   - "COVERAGE=${COVERAGE} ./gradlew -p ./monolithic/$TARGET check"
-
 jobs:
   include:
     stage: deploy
     deploy:
       - provider: script
-        script: echo "WIP"
+        script: bash -c "echo \"${DOCKER_PASSWORD}\" | docker login --username \"${DOCKER_LOGIN}\" --password-stdin"
         on:
           all_branches: true
